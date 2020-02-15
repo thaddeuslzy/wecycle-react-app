@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import TabBarIcon from '../components/TabBarIcon';
 import ContributeScreen from '../screens/ContributeScreen';
 import MainScreen from '../screens/MainScreen';
-import SettingsScreen from '../screens/SettingsScreen';
+import LeaderboardScreen from '../screens/LeaderboardScreen';
 
 const BottomTab = createBottomTabNavigator();
 const INITIAL_ROUTE_NAME = 'Main';
@@ -33,11 +33,11 @@ export default function BottomTabNavigator({ navigation, route }) {
         }}
       />
       <BottomTab.Screen
-        name="Settings"
-        component={SettingsScreen}
+        name="Leaderboard"
+        component={LeaderboardScreen}
         options={{
-          title: 'Settings',
-          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-settings" />,
+          title: 'Leaderboard',
+          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-trophy" />,
         }}
       />
     </BottomTab.Navigator>
@@ -51,8 +51,8 @@ function getHeaderTitle(route) {
     case 'Contribute':
       return 'Help the Community!';
     case 'Main':
-      return 'FUCK YOUR MOTHER';
-    case 'Settings':
-      return 'Settings';
+      return 'Recycle or Nah?';
+    case 'Leaderboard':
+      return 'Leaderboard';
   }
 }

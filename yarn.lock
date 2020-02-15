@@ -5376,6 +5376,13 @@ react-native-iphone-x-helper@^1.2.1:
   resolved "https://registry.yarnpkg.com/react-native-iphone-x-helper/-/react-native-iphone-x-helper-1.2.1.tgz#645e2ffbbb49e80844bb4cbbe34a126fda1e6772"
   integrity sha512-/VbpIEp8tSNNHIvstuA3Swx610whci1Zpc9mqNkqn14DkMbw+ORviln2u0XyHG1kPvvwTNGZY6QpeFwxYaSdbQ==
 
+react-native-leaderboard@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/react-native-leaderboard/-/react-native-leaderboard-1.0.6.tgz#2ade5944aa4e5959d86770310139f1e3e5bc0b4b"
+  integrity sha512-EXZrkthPZqKCfE8PlTx5rejlaGQ9Ac/yaEZMmNzrVjcGOtKn0Hb+O/cCxE1G8tRnGlTeBH12b50Ylbrd6KK0Yw==
+  dependencies:
+    prop-types "^15.6.0"
+
 react-native-safe-area-context@0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-0.6.0.tgz#f53f5a5bcafb462a8798a26b145e68946389ad60"
