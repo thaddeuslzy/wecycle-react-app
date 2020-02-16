@@ -19,7 +19,7 @@ export default function MainScreen() {
   const [showInformation, setShowInformation] = React.useState(false);
   const [showThankyou, setShowThankyou] = React.useState(false);
   const [showAwesome, setShowAwesome] = React.useState(false);
-  const [materialType, setMaterialType] = React.useState('plastic');
+  const [materialType, setMaterialType] = React.useState('metal');
   const [loading, setLoading] = React.useState(false);
 
   const openCamera = () => {
@@ -84,22 +84,25 @@ export default function MainScreen() {
       setLatestImg(photo.uri);  // preview the photo
       setIsCameraVisible(false); // close the camera UI
       setHasResults(true);
+      setShowInformation(true);
     }
   };
 
   async function getResults(query) {
     try {
-      let response = await fetch("http://1fde162a.ngrok.io/materials" , {
+      let response = await fetch("https://72a0a035.ngrok.io/materials" , {
       method: "GET",
-      body: query
+      // body: query
       });
       if(response.status > 400){
+        console.log("400 Code");
         return {};
       } else {
+        console.log("awaiting response");
         return await response.json();
       }
     } catch(e) {
-        return {};
+        console.log(e);
    }
   }
 

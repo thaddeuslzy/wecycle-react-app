@@ -7,19 +7,27 @@ export default function(){
             <Text style={styles.header}>
                 Metal
             </Text>
-            <View>
+            <View style={{alignItems:"center", justifyContent:"center"}}>
                 <Text style={[styles.recyclables, styles.header, styles.underline]}>
                 Recyclables
                 </Text>
                 <Text style={styles.largeFont}>
-                Aluminum Cans{}
+{`Aluminum Cans
+Steel Cans
+Aluminum Trays
+Pie Plates
+Roasting Pans
+Cookie Tins
+Aerosol Cans
+Paint Cans`}
                 </Text>
             </View>
-            <View>
+            <View style={{alignItems:'center', justifyContent:'ce'}}>
                 <Text style={[styles.warning, styles.header, styles.underline]}>
                 Warning!
                 </Text>
-                <Text style={[styles.largeFont, styles.underline]}>
+                <Text style={styles.largeFont}>
+{`Remember to clean your items!`}
                 </Text>
             </View>
         </View>
@@ -28,9 +36,11 @@ export default function(){
 }
 const styles = StyleSheet.create({
     largeFont: {
+        alignSelf: 'center',
         fontSize: 18
       },
       header: {
+        alignSelf: 'center',
         fontSize: 24
       },
       recyclables: {
