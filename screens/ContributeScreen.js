@@ -1,11 +1,30 @@
 import * as React from 'react';
-import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Platform, StyleSheet, Text, TouchableOpacity, View, Button } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import * as WebBrowser from 'expo-web-browser';
+import PickerSelect from 'react-native-picker-select';
 
-import { MonoText } from '../components/StyledText';
 
 export default function ContributeScreen() {
+  const [currentImgIdx, setCurrentImgIdx] = React.useState(0)
+  const images = [
+    {
+      id: "1",
+      actualimage: require("../assets/images/photo_202002160.jpg"),
+    },
+    {
+      id: "2",
+      actualimage: require("../assets/images/photo_202002161.jpg"),
+    },
+    {
+      id: "3",
+      actualimage: require("../assets/images/photo_202002162.jpg"),
+    },
+    {
+      id: "4",
+      actualimage: require("../assets/images/photo_202002163.jpg"),
+    },
+  ];
+
   return (
     <View style={styles.container}>
       <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
@@ -19,31 +38,106 @@ export default function ContributeScreen() {
         <View style={styles.getStartedContainer}>
           <DevelopmentModeNotice />
 
-          <Text style={styles.getStartedText}>Open up the code for this screen:</Text>
-
-          <View style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>
-            <MonoText>screens/HomeScreen.js</MonoText>
+          <Text style={styles.getStartedText}>Teach me Senpai!</Text>
+          <View>
+            <View>
+              {
+                  images[currentImgIdx] &&
+                    <Image
+                      key={images[currentImgIdx].id}
+                      style = {{
+                        width: 300,
+                        height: 300,
+                      }}
+                      source={images[currentImgIdx].actualimage} 
+                    />
+              }
+            </View>
+            <View>
+            </View>
           </View>
-
-          <Text style={styles.getStartedText}>
-            Change any of the text, save the file, and your app will automatically reload.
-          </Text>
+          {/* <View style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>
+            <MonoText>screens/HomeScreen.js</MonoText>
+          </View> */}
+          <View>
+            <Text style={styles.getStartedText}>
+              Place me in:
+            </Text>
+            <PickerSelect 
+              style={styles.feedbackInput}
+              onValueChange={(value) => console.log(value)}
+              items={[
+                  { label: 'Plastic', value: 'plastic' },
+                  { label: 'Paper', value: 'paper' },
+                  { label: 'Cardboard', value: 'cardboard' },
+                  { label: 'Metal', value: 'metal' },
+                  { label: 'Glass', value: 'glass' },
+                  { label: 'Rubbish/Landfill', value: 'rubbish' },
+              ]}
+            />
+          </View>
+          <View>
+            <Text style={styles.getStartedText}>
+              I am a:
+            </Text>
+            <View style={styles.feedbackInputs}>
+              <PickerSelect 
+                style={styles.feedbackInput}
+                onValueChange={(value) => console.log(value)}
+                items={[
+                    { label: 'Plastic', value: 'plastic' },
+                    { label: 'Paper', value: 'paper' },
+                    { label: 'Cardboard', value: 'cardboard' },
+                    { label: 'Metal', value: 'metal' },
+                    { label: 'Glass', value: 'glass' },
+                    { label: 'Rubbish/Landfill', value: 'rubbish' },
+                ]}
+              />
+              <Text style={styles.getStartedText}>
+              {`  `}
+              </Text>
+              <PickerSelect 
+                style={styles.feedbackInput}
+                onValueChange={(value) => console.log(value)}
+                items={[
+                  { label: 'Others', value: 'others' },
+                  { label: 'Bottle', value: 'bottle' },
+                  { label: 'Can', value: 'can' },
+                  { label: 'Container', value: 'container' },
+                  { label: 'Sheet', value: 'sheet' },
+                  { label: 'Bag', value: 'bag' },
+                  { label: 'Case', value: 'case' },
+                  { label: 'Plate/Utensil', value: 'plates' },
+                  { label: 'Bundle', value: 'bundle' },
+                  { label: 'Roll', value: 'roll' },
+                ]}
+              />
+            </View>
+            
+          </View>
+          <Button 
+                title= "Submit" 
+                onPress={() => setCurrentImgIdx(currentImgIdx == images.length - 1 ? 
+                    0 : 
+                    currentImgIdx + 1
+                )}
+            />
         </View>
 
-        <View style={styles.helpContainer}>
+        {/* <View style={styles.helpContainer}>
           <TouchableOpacity onPress={handleHelpPress} style={styles.helpLink}>
             <Text style={styles.helpLinkText}>Help, it didn’t automatically reload!</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
       </ScrollView>
 
-      <View style={styles.tabBarInfoContainer}>
+      {/* <View style={styles.tabBarInfoContainer}>
         <Text style={styles.tabBarInfoText}>This is a tab bar. You can edit it in:</Text>
 
         <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
           <MonoText style={styles.codeHighlightText}>navigation/BottomTabNavigator.js</MonoText>
         </View>
-      </View>
+      </View> */}
     </View>
   );
 }
@@ -53,35 +147,10 @@ ContributeScreen.navigationOptions = {
 };
 
 function DevelopmentModeNotice() {
-  if (__DEV__) {
-    const learnMoreButton = (
-      <Text onPress={handleLearnMorePress} style={styles.helpLinkText}>
-        Learn more
-      </Text>
-    );
-
-    return (
-      <Text style={styles.developmentModeText}>
-        Development mode is enabled: your app will be slower but you can use useful development
-        tools. {learnMoreButton}
-      </Text>
-    );
-  } else {
-    return (
-      <Text style={styles.developmentModeText}>
-        You are not in development mode: your app will run at full speed.
-      </Text>
-    );
-  }
-}
-
-function handleLearnMorePress() {
-  WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/workflow/development-mode/');
-}
-
-function handleHelpPress() {
-  WebBrowser.openBrowserAsync(
-    'https://docs.expo.io/versions/latest/get-started/create-a-new-app/#making-your-first-change'
+  return (
+    <Text style={styles.developmentModeText}>
+      Help improve our predictions by helping the model learn from user-submitted images!
+    </Text>
   );
 }
 
@@ -106,8 +175,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   welcomeImage: {
-    width: 100,
-    height: 80,
+    width: 150,
+    height: 150,
     resizeMode: 'contain',
     marginTop: 3,
     marginLeft: -10,
@@ -152,24 +221,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fbfbfb',
     paddingVertical: 20,
-  },
-  tabBarInfoText: {
-    fontSize: 17,
-    color: 'rgba(96,100,109, 1)',
-    textAlign: 'center',
-  },
-  navigationFilename: {
-    marginTop: 5,
-  },
-  helpContainer: {
-    marginTop: 15,
-    alignItems: 'center',
-  },
-  helpLink: {
-    paddingVertical: 15,
-  },
-  helpLinkText: {
-    fontSize: 14,
-    color: '#2e78b7',
+  },  
+  feedbackInputs: {
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
 });

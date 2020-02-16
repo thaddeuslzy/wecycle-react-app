@@ -1,5 +1,8 @@
 import * as React from 'react';
+import { View } from 'react-native';
 import Leaderboard from 'react-native-leaderboard';
+import LeaderHoardHeader from '../components/LeaderBoardHeader';
+import LeaderBoardHeader from '../components/LeaderBoardHeader';
 
 export default function() {
     const data = [
@@ -22,8 +25,12 @@ export default function() {
         labelBy: 'userName',
     }
     return (
-        <Leaderboard
-            {...props}
-        />
+        <View>
+            <LeaderBoardHeader/>
+            <Leaderboard
+                {...props}
+            />
+        </View>
+
     )
 }

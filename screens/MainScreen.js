@@ -1,42 +1,77 @@
 import * as React from 'react';
-import { StyleSheet, Text, View, Button, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, Text, View, Button, TouchableOpacity, Image, TouchableHighlight, Picker} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import * as WebBrowser from 'expo-web-browser';
-import { RectButton, ScrollView } from 'react-native-gesture-handler';
 import { Camera } from 'expo-camera';
 import TabBarIcon from '../components/TabBarIcon';
 import Icons from '../components/Icons';
+import { Icon } from 'react-native-elements';
+import PickerSelect from 'react-native-picker-select';
+import Overlay from 'react-native-modal-overlay';
 
 export default function MainScreen() {
   const [hasPermission, setHasPermission] = React.useState(null);
   const [type, setType] = React.useState(Camera.Constants.Type.back);
   const [latestImage, setLatestImg] = React.useState(null)
   const [isCameraVisible, setIsCameraVisible] = React.useState(false);
+  const [hasResults, setHasResults] = React.useState(false);
+  const [showFeedback, setShowFeedback] = React.useState(false);
+  const [showInformation, setShowInformation] = React.useState(false);
+  const [showThankyou, setShowThankyou] = React.useState(false);
+  const [showAwesome, setShowAwesome] = React.useState(false);
+  const [materialType, setMaterialType] = React.useState('Metal');
 
   const openCamera = () => {
     if (hasPermission === null || hasPermission === false) {
       Alert.alert("Error", "No access to camera");
     } else {
       setIsCameraVisible(true);
+      setHasResults(false);
+      setShowAwesome(false);
+      setShowThankyou(false);
     }
   }
-  
-  const closeCamera = () => {
-    setIsCameraVisible(false);
-  };
+  const closeOverlay = () => {
+    setShowInformation(false);
+  }
+  const showOverlay = () => {
+    setShowInformation(true);
+  }
 
+  const toggleAwesome = () => {
+    setShowAwesome(true);
+    setLatestImg(null);
+    setHasResults(false);
+  }
+  const reset = () => {
+    setShowAwesome(false);
+    setShowThankyou(false);
+    setHasResults(false);
+    setShowFeedback(false);
+    setIsCameraVisible(false);
+    setLatestImg(null);
+    setShowInformation(false);
+  }
+  const toggleFeedback = () => {
+    setHasResults(false);
+    setShowFeedback(true);
+  }
+  const toggleThanks = () => {
+    console.log("toggle thanks");
+    setShowFeedback(false);
+    setLatestImg(null);
+    setShowThankyou(true);
+  }
 
   const takePicture = async () => {
     if (this.camera) {
       let photo = await this.camera.takePictureAsync({ base64: true }); // take a snap, and return base64 representation
-
-      // construct
       let formData = new FormData();
       formData.append("image", photo.base64); 
       formData.append("type", "base64");
       console.log(photo.uri);
-      setLatestImg(photo.uri);  // preview the photo that was taken
-      setIsCameraVisible(false); // close the camera UI after taking the photo
+      setLatestImg(photo.uri);  // preview the photo
+      setIsCameraVisible(false); // close the camera UI
+      setHasResults(true);
 
       // const response = await fetch("https://api.imgur.com/3/image", {
       //   method: "POST",
@@ -49,10 +84,6 @@ export default function MainScreen() {
       // let response_body = await response.json(); // get the response body
     }
   };
-
-const onPictureSaved = photo => {
-  console.log(photo);
-}
 
   React.useEffect(() => {
     (async () => {
@@ -68,39 +99,52 @@ const onPictureSaved = photo => {
     return <Text>No access to camera</Text>;
   }
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, flexDirection: 'column'}}>
+      <Overlay
+        visible={showInformation}
+        onClose={closeOverlay}
+        closeOnTouchOutside
+      >
+        <Text>Hello from Overlay!</Text>
+      </Overlay>
       {!isCameraVisible &&
-      <ScrollView contentContainerStyle={styles.scroll}>
         <View>
-          <TouchableOpacity>
+          {latestImage &&
             <View>
-              <Text>Placeholdertext</Text>
-            </View>
-          </TouchableOpacity>
-          <View>
+              <View>
+                <Image
+                  style= {{alignSelf: "center", width:415, height: 415}}
+                  resizeMode={"cover"}
+                  source={{ uri: latestImage }}
+                />
+              </View>
+              <View style={{flexDirection: 'row'}}>
+                <TouchableHighlight style={{position:'absolute'}} onPress={showOverlay}>
+                  <Image
+                    source={require('../assets/images/turtle.png')}
+                    style={{width:50, height:50, margin: 10}}
+                  />
+                </TouchableHighlight>
+                <TouchableHighlight style={{marginLeft: 180}} onPress={openCamera}>
+                  <Icons style={{alignSelf: "center"}} name="camera" size={40} color="#1083bb" />
+                </TouchableHighlight>
+              </View>
+            </View>}
+          {!latestImage && 
+          <View style={styles.startCamera}> 
             <TouchableOpacity onPress={openCamera}>
-              <Icons name="camera" size={40} color="#1083bb" />
+              <Icons style={{alignSelf: "center"}} name="camera" size={40} color="#1083bb" />
             </TouchableOpacity>
           </View>
-
-          {latestImage &&
-            <View style={{flex:1}}>
-              <Image
-                style= {{width:300, height: 300}}
-                resizeMode={"cover"}
-                source={{ uri: latestImage }}
-              />
-              <Text>Image Here</Text>
-            </View>
           }
         </View>
-      </ScrollView>
+
     }
     {isCameraVisible && 
-      <Camera ref={(ref) => {this.camera = ref}} style={{ flex: 1 }} type={type} autoFocus={"on"}>
+      <Camera ref={(ref) => {this.camera = ref}} style={{ flex: 1, justifyContent: 'flex-end'}} type={type} autoFocus={"on"}>
         <View
           style={{
-            flex: 1,
+            flex: 0,
             backgroundColor: 'transparent',
             flexDirection: 'row',
           }}>
@@ -119,7 +163,6 @@ const onPictureSaved = photo => {
               );
             }}>
             <TabBarIcon style={{marginBottom:0, marginLeft:10}} size={50} name="ios-reverse-camera" />
-            
           </TouchableOpacity>
           <TouchableOpacity
             style={{
@@ -133,52 +176,162 @@ const onPictureSaved = photo => {
           </TouchableOpacity>
         </View>
       </Camera>}
-    
+    {latestImage && hasResults &&
+      <View style={styles.contentContainer}>
+        <View style={styles.container}>
+          <Text style={styles.bottomText}>Reyclable:</Text>
+          <Text style={styles.recycleYes}>YES</Text>
+        </View>
+        <View style={styles.container}>
+          <Text>Material:</Text>
+          <Text style={styles.material}>Metal</Text>
+        </View>
+        <View style={styles.container} >
+          <Text>Did we get it right?</Text>
+          <View style={styles.checks}>
+            <TouchableHighlight onPress={toggleAwesome}>
+              <Icon
+                reverse
+                name='md-checkmark'
+                type='ionicon'
+                color='green'
+              />
+            </TouchableHighlight>
+            <TouchableHighlight onPress={toggleFeedback}>
+              <Icon
+                reverse
+                name='md-close'
+                type='ionicon'
+                color='red'
+              />
+            </TouchableHighlight>
+          </View>
+        </View>
+      </View>}
+      {showAwesome && 
+        <View style={styles.awesome}>
+          <Text style={styles.awesometext}>Awesome!</Text>
+        </View>
+      }
+      {showFeedback && 
+      <View style={styles.feedback}>
+        <Text style={styles.feedbacktext}>
+          Help Us Improve!
+        </Text>
+        <Text style={styles.feedbacktext}>
+          What did you think it was?
+        </Text>
+        <View style={styles.feedbackInputs}>
+          <PickerSelect 
+            style={styles.feedbackInput}
+            onValueChange={(value) => console.log(value)}
+            items={[
+              { label: 'Plastic', value: 'plastic' },
+              { label: 'Paper', value: 'paper' },
+              { label: 'Cardboard', value: 'cardboard' },
+              { label: 'Metal', value: 'metal' },
+              { label: 'Glass', value: 'glass' },
+              { label: 'Rubbish/Landfill', value: 'rubbish' },
+            ]}
+            />
+          <Text style={styles.getStartedText}>
+            {`  `}
+          </Text>
+          <PickerSelect 
+            onValueChange={(value) => console.log(value)}
+            items={[
+              { label: 'Others', value: 'others' },
+              { label: 'Bottle', value: 'bottle' },
+              { label: 'Can', value: 'can' },
+              { label: 'Container', value: 'container' },
+              { label: 'Sheet', value: 'sheet' },
+              { label: 'Bag', value: 'bag' },
+              { label: 'Case', value: 'case' },
+              { label: 'Plate/Utensil', value: 'plates' },
+              { label: 'Bundle', value: 'bundle' },
+              { label: 'Roll', value: 'roll' },
+            ]}
+          />
+        </View>
+        <Button 
+          onPress={toggleThanks}
+          style={styles.button}
+          title="Submit">
+        </Button>
+      </View>}
 
-    </View>
-  );
+      {showThankyou && 
+        <View style={styles.awesome}>
+          <Text style={styles.awesometext}>
+            Thank You!
+          </Text>
+          <Text style={styles.thankYouText}>
+            ReRite is now smarter because of you!
+          </Text>
+        </View>
+      }
+    </View>);
 }
 
-function OptionButton({ icon, label, onPress, isLastOption }) {
-  return (
-    <RectButton style={[styles.option, isLastOption && styles.lastOption]} onPress={onPress}>
-      <View style={{ flexDirection: 'row' }}>
-        <View style={styles.optionIconContainer}>
-          <Ionicons name={icon} size={22} color="rgba(0,0,0,0.35)" />
-        </View>
-        <View style={styles.optionTextContainer}>
-          <Text style={styles.optionText}>{label}</Text>
-        </View>
-      </View>
-    </RectButton>
-  );
-}
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fafafa',
+  startCamera: {
+    justifyContent: 'center',
+    alignContent: 'center'
   },
   contentContainer: {
-    paddingTop: 15,
+    alignSelf: 'center',
+    alignItems: 'center',
   },
-  optionIconContainer: {
-    marginRight: 12,
+  container: {
+    marginBottom: 20,
+    alignSelf: "center"
   },
-  option: {
-    backgroundColor: '#fdfdfd',
-    paddingHorizontal: 15,
-    paddingVertical: 15,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderBottomWidth: 0,
-    borderColor: '#ededed',
+  checks: {
+    flexDirection: 'row',
   },
-  lastOption: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
+  bottomText: {
+    alignContent: "center",
+    justifyContent:"center"
   },
-  optionText: {
-    fontSize: 15,
-    alignSelf: 'flex-start',
-    marginTop: 1,
+  recycleYes: {
+    color: 'green',
+    fontSize: 24,
   },
+  recycleNo: {
+    color: 'red',
+    fontSize: 24,
+  },
+  material: {
+    color: 'grey',
+    fontSize: 24,
+  },
+  awesome: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  awesometext: {
+    fontSize: 30,
+    alignSelf: 'center'
+  },
+  feedback: {
+    flex: 1,
+  },
+  feedbacktext: {
+    fontSize: 20,
+    alignSelf: 'center'
+  },
+  feedbackInputs: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  thankYouText: {
+    alignSelf: 'center',
+  },
+  feedbackInput: {
+    alignSelf: 'center',
+    borderStyle: 'solid',
+    marginLeft: 5,
+    marginRight: 5
+  }
 });
