@@ -1,12 +1,13 @@
 import * as React from 'react';
-import { StyleSheet, Text, View, Button, TouchableOpacity, Image, TouchableHighlight, Picker} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { StyleSheet, Text, View, Button, TouchableOpacity, Image, TouchableHighlight, Dimensions} from 'react-native';
 import { Camera } from 'expo-camera';
 import TabBarIcon from '../components/TabBarIcon';
 import Icons from '../components/Icons';
 import { Icon } from 'react-native-elements';
 import PickerSelect from 'react-native-picker-select';
 import Overlay from 'react-native-modal-overlay';
+import MetalOverlay from '../components/OverlayMetal';
+import Loader from '../components/Loader';
 
 export default function MainScreen() {
   const [hasPermission, setHasPermission] = React.useState(null);
@@ -18,7 +19,8 @@ export default function MainScreen() {
   const [showInformation, setShowInformation] = React.useState(false);
   const [showThankyou, setShowThankyou] = React.useState(false);
   const [showAwesome, setShowAwesome] = React.useState(false);
-  const [materialType, setMaterialType] = React.useState('Metal');
+  const [materialType, setMaterialType] = React.useState('plastic');
+  const [loading, setLoading] = React.useState(false);
 
   const openCamera = () => {
     if (hasPermission === null || hasPermission === false) {
@@ -61,6 +63,12 @@ export default function MainScreen() {
     setLatestImg(null);
     setShowThankyou(true);
   }
+  const showLoading = () => {
+    setLoading(true);
+  }
+  const hideLoading = () => {
+    setLoading(false);
+  }
 
   const takePicture = async () => {
     if (this.camera) {
@@ -69,21 +77,31 @@ export default function MainScreen() {
       formData.append("image", photo.base64); 
       formData.append("type", "base64");
       console.log(photo.uri);
+      showLoading;
+      let result = await getResults(formData);
+      console.log(result);
+      hideLoading;
       setLatestImg(photo.uri);  // preview the photo
       setIsCameraVisible(false); // close the camera UI
       setHasResults(true);
-
-      // const response = await fetch("https://api.imgur.com/3/image", {
-      //   method: "POST",
-      //   headers: {
-      //     Authorization: "Client-ID YOUR_IMGUR_APP_ID" // add your Imgur App ID here
-      //   },
-      //   body: formData
-      // });
-
-      // let response_body = await response.json(); // get the response body
     }
   };
+
+  async function getResults(query) {
+    try {
+      let response = await fetch("http://1fde162a.ngrok.io/materials" , {
+      method: "GET",
+      body: query
+      });
+      if(response.status > 400){
+        return {};
+      } else {
+        return await response.json();
+      }
+    } catch(e) {
+        return {};
+   }
+  }
 
   React.useEffect(() => {
     (async () => {
@@ -105,7 +123,27 @@ export default function MainScreen() {
         onClose={closeOverlay}
         closeOnTouchOutside
       >
-        <Text>Hello from Overlay!</Text>
+        {(materialType === 'metal') && <MetalOverlay/>}
+        {(materialType !== 'metal') && 
+          <View>
+            <Text style={styles.header}>
+              Material
+            </Text>
+            <View>
+              <Text style={[styles.recyclables, styles.header, styles.underline]}>
+                Recyclables
+              </Text>
+              <Text style={styles.largeFont}>
+              </Text>
+            </View>
+          <View>
+            <Text style={[styles.warning, styles.header, styles.underline]}>
+              Warning!
+            </Text>
+            <Text style={[styles.largeFont, styles.underline]}>
+            </Text>
+          </View>
+        </View>}
       </Overlay>
       {!isCameraVisible &&
         <View>
@@ -138,7 +176,6 @@ export default function MainScreen() {
           </View>
           }
         </View>
-
     }
     {isCameraVisible && 
       <Camera ref={(ref) => {this.camera = ref}} style={{ flex: 1, justifyContent: 'flex-end'}} type={type} autoFocus={"on"}>
@@ -273,7 +310,6 @@ export default function MainScreen() {
     </View>);
 }
 
-
 const styles = StyleSheet.create({
   startCamera: {
     justifyContent: 'center',
@@ -333,5 +369,20 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
     marginLeft: 5,
     marginRight: 5
+  },
+  largeFont: {
+    fontSize: 18
+  },
+  header: {
+    fontSize: 24
+  },
+  recyclables: {
+    color: 'green'
+  },
+  warning: {
+    color: 'red'
+  },
+  underline: {
+    textDecorationLine: 'underline'
   }
 });
