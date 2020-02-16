@@ -18,8 +18,8 @@ Aluminum Trays
 Pie Plates
 Roasting Pans
 Cookie Tins
-Aerosol Cans
-Paint Cans`}
+Aerosol Cans (Plastic caps must be removed)
+Paint Cans (Must be empty with lids removed)`}
                 </Text>
             </View>
             <View style={{alignItems:'center', justifyContent:'ce'}}>
